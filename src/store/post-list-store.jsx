@@ -1,83 +1,73 @@
 import { createContext, useReducer } from "react";
 
-const DEFAULT_DATA = [
-  {
-    userId: "user-3",
-    postId: "2",
-    title: "Card title",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, iure?",
-    hashTags: ["#hi", "#awsom", "#superb"],
-    rections: 12,
-  },
-  {
-    userId: "user-3",
-    postId: "3",
-    title: "Card title",
-    description:
-      "Some quick example text to build on the card title and make up the bulk of the card's content.",
-    hashTags: ["#hi", "#awsom", "#superb"],
-    rections: 12,
-  },
-];
 export const PostListContext = createContext({
   posts: [],
   deletePost: () => {},
   addPost: () => {},
+  addInitialPosts: () => {},
 });
 
 const postsReducer = (current, action) => {
   let newPostList = current;
   if (action.type === "ADD_POST") {
-    // userId, postId, title, description, hashTags, reactions
+    // userId, id, title, body, tags, reactions
     const userId = action.payload.userId;
-    const postId = Date.now();
+    const id = Date.now();
     const title = action.payload.title;
-    const description = action.payload.description;
-    const temp = action.payload.hashTags.trim().split(" ");
-    let hashTags = temp.map((item) => `#${item}`);
-    const reactions = 0;
+    const body = action.payload.body;
+    let tags = action.payload.tags.trim().split(" ");
+    const reactions = {
+      likes: 0,
+      dislikes: 0,
+    };
 
-    newPostList = [
-      { userId, postId, title, description, hashTags, reactions },
-      ...current,
-    ];
+    newPostList = [{ userId, id, title, body, tags, reactions }, ...current];
   } else if (action.type === "DELETE_POST") {
-    newPostList = current.filter(
-      (item) => action.payload.postId !== item.postId
-    );
+    newPostList = current.filter((item) => action.payload.id !== item.id);
+  } else if (action.type === "ADD_INITIAL_POSTS") {
+    newPostList = action.payload.posts;
   }
   return newPostList;
 };
 
 const PostListProvider = ({ children }) => {
-  const [posts, dispatchPosts] = useReducer(postsReducer, DEFAULT_DATA);
+  const [posts, dispatchPosts] = useReducer(postsReducer, []);
 
-  const deletePost = (postId) => {
+  const deletePost = (id) => {
     const deletePostAction = {
       type: "DELETE_POST",
       payload: {
-        postId,
+        id,
       },
     };
     dispatchPosts(deletePostAction);
   };
 
-  const addPost = (userId, title, description, hashTags) => {
+  const addPost = (userId, title, body, tags) => {
     const addPostAction = {
       type: "ADD_POST",
       payload: {
         userId,
         title,
-        description,
-        hashTags,
+        body,
+        tags,
       },
     };
     dispatchPosts(addPostAction);
   };
-
+  const addInitialPosts = (posts) => {
+    const addInitialPostsAction = {
+      type: "ADD_INITIAL_POSTS",
+      payload: {
+        posts,
+      },
+    };
+    dispatchPosts(addInitialPostsAction);
+  };
   return (
-    <PostListContext.Provider value={{ posts, deletePost, addPost }}>
+    <PostListContext.Provider
+      value={{ posts, deletePost, addPost, addInitialPosts }}
+    >
       {children}
     </PostListContext.Provider>
   );

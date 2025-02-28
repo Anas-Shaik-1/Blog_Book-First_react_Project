@@ -4,7 +4,7 @@ const AddPost = () => {
   const userId = useRef();
   const postTitle = useRef();
   const postDescription = useRef();
-  const hashTags = useRef();
+  const tags = useRef();
 
   const { addPost } = useContext(PostListContext);
 
@@ -14,12 +14,12 @@ const AddPost = () => {
       userId.current.value,
       postTitle.current.value,
       postDescription.current.value,
-      hashTags.current.value
+      tags.current.value
     );
     userId.current.value = "";
     postTitle.current.value = "";
     postDescription.current.value = "";
-    hashTags.current.value = "";
+    tags.current.value = "";
   };
   return (
     <div className="container w-75">
@@ -36,6 +36,7 @@ const AddPost = () => {
             id="user-id"
             className="form-control col-3"
             ref={userId}
+            required
           />
         </div>
         <div className="mb-3">
@@ -48,6 +49,7 @@ const AddPost = () => {
             className="form-control"
             placeholder="How You Feel"
             ref={postTitle}
+            required
           />
         </div>
         <div className="mb-3">
@@ -60,6 +62,7 @@ const AddPost = () => {
             placeholder="Let Everyone Know About It"
             rows={3}
             ref={postDescription}
+            required
           ></textarea>
         </div>
 
@@ -72,7 +75,8 @@ const AddPost = () => {
             id="hash-tags"
             className="form-control"
             placeholder="#Feelings"
-            ref={hashTags}
+            ref={tags}
+            required
           />
         </div>
 
